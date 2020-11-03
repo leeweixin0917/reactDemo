@@ -2,13 +2,15 @@ import React, { Component, Fragment } from "react";
 import axios from "axios";
 import "./style.css";
 import XiaojiejieItem from "./XiaojiejieItem";
+import Boss from "./Boss";
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 class Xiaojiejie extends Component {
   // 在某一时刻，可以自动执行的函数
   constructor(props) {
     super(props);
     this.state = {
       inputValue: "",
-      list: ["头部按摩", "精油推背"],
+      list: []
     };
   }
   //   componentWillMount() {
@@ -32,9 +34,12 @@ class Xiaojiejie extends Component {
 
   componentDidMount() {
     axios
-      .post("https://web-api.juejin.im/v3/web/wbbr/bgeda")
+      .get("https://www.easy-mock.com/mock/5fa0fc89b2c1752548b97f98/ReactDemo01/xiaojiejie")
       .then((res) => {
         console.log("axio获取数据成功:" + JSON.stringify(res));
+        this.setState({
+          list:res.data.data
+        })
       })
       .catch((error) => {
         console.log(`axios获取数据失败:` + error);
@@ -66,17 +71,29 @@ class Xiaojiejie extends Component {
             this.ul = ul;
           }}
         >
-          {this.state.list.map((item, index) => {
-            return (
-              <XiaojiejieItem
-                key={index + item}
-                content={item}
-                index={index}
-                deleteItem={this.deleteItem.bind(this)}
-              />
-            );
-          })}
+          <TransitionGroup>
+            {this.state.list.map((item, index) => {
+              return (
+                <CSSTransition
+                  timeout={2000}
+                  classNames='boss-text'
+                  unmountOnExit
+                  appear={true}
+                  key={index+item}
+                >
+                    <XiaojiejieItem
+                      key={index + item}
+                      content={item}
+                      index={index}
+                      deleteItem={this.deleteItem.bind(this)}
+                    />
+                </CSSTransition>
+                
+              );
+            })}
+          </TransitionGroup>
         </ul>
+        <Boss/>
       </Fragment>
     );
   }
